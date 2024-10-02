@@ -7,7 +7,7 @@ import com.denyskostetskyi.networkrequests.domain.model.WeatherForecast
 import com.denyskostetskyi.networkrequests.domain.repository.WeatherForecastRepository
 import java.io.IOException
 
-class WeatherForecastRepositoryImpl(
+class RetrofitWeatherForecastRepository(
     private val apiService: OpenMeteoApiService,
     private val mapper: WeatherForecastMapper,
 ) : WeatherForecastRepository {
