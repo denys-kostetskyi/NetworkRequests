@@ -30,16 +30,11 @@ class MainActivity : AppCompatActivity() {
     private fun setMakeRequestButtonClickListener() {
         with(binding) {
             buttonMakeRequest.setOnClickListener {
-                val isRetrofitSelected = radioButtonRetrofit.isChecked
-                val isKtorSelected = radioButtonKtor.isChecked
-                val httpClient = if (isRetrofitSelected) {
-                    HttpClient.RETROFIT
-                } else if (isKtorSelected) {
-                    HttpClient.KTOR
-                } else {
-                    return@setOnClickListener
+                when {
+                    radioButtonRetrofit.isChecked -> makeRequest(HttpClient.RETROFIT)
+                    radioButtonKtor.isChecked -> makeRequest(HttpClient.KTOR)
+                    else -> textViewResult.text = getString(R.string.please_select_a_http_client)
                 }
-                makeRequest(httpClient)
             }
         }
     }
