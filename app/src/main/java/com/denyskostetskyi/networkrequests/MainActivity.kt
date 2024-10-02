@@ -10,6 +10,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import com.denyskostetskyi.networkrequests.databinding.ActivityMainBinding
 import com.denyskostetskyi.networkrequests.domain.model.HttpClient
+import com.denyskostetskyi.networkrequests.domain.model.Location
 import com.denyskostetskyi.networkrequests.domain.model.WeatherForecast
 import com.denyskostetskyi.networkrequests.presentation.state.WeatherForecastUiState
 import com.denyskostetskyi.networkrequests.presentation.viewmodel.MainViewModel
@@ -58,7 +59,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun makeRequest(httpClient: HttpClient) {
         when (httpClient) {
-            HttpClient.RETROFIT -> Log.d("TEST", "RETROFIT")
+            HttpClient.RETROFIT -> viewModel.fetchWeatherForecastRetrofit(Location.LVIV)
             HttpClient.KTOR -> Log.d("TEST", "KTOR")
         }
     }

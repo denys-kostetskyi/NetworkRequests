@@ -7,8 +7,8 @@ import com.denyskostetskyi.networkrequests.domain.model.WeatherForecast
 
 class WeatherForecastMapper {
     fun mapDtoToEntity(dto: WeatherForecastDto, location: Location): WeatherForecast {
-        val weatherList = getWeatherListFromCodes(dto.weatherCodeArray)
-        val temperatureList = dto.temperatureArray.toList()
+        val weatherList = getWeatherListFromCodes(dto.hourly.weatherCodeArray)
+        val temperatureList = dto.hourly.temperatureArray.toList()
         return WeatherForecast(
             temperatureList = temperatureList,
             weatherList = weatherList,
