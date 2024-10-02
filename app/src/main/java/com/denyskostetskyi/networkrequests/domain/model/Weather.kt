@@ -7,4 +7,5 @@ enum class Weather {
     RAIN,
     SNOW,
     THUNDERSTORM,
+    UNKNOWN,
 }
