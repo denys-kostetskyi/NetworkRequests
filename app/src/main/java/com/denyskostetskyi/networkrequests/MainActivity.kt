@@ -6,9 +6,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import com.denyskostetskyi.networkrequests.databinding.ActivityMainBinding
 import com.denyskostetskyi.networkrequests.domain.model.HttpClient
+import com.denyskostetskyi.networkrequests.domain.model.WeatherForecast
+import com.denyskostetskyi.networkrequests.presentation.state.WeatherForecastUiState
 import com.denyskostetskyi.networkrequests.presentation.viewmodel.MainViewModel
 import com.denyskostetskyi.networkrequests.presentation.viewmodel.MainViewModelFactory
 
@@ -27,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         }
         initViewModel()
         initViews()
+        observeViewModel()
     }
 
     private fun initViewModel() {
@@ -57,5 +61,33 @@ class MainActivity : AppCompatActivity() {
             HttpClient.RETROFIT -> Log.d("TEST", "RETROFIT")
             HttpClient.KTOR -> Log.d("TEST", "KTOR")
         }
+    }
+
+    private fun observeViewModel() {
+        viewModel.weatherForecast.observe(this) {
+            when (it) {
+                is WeatherForecastUiState.Success -> {
+                    updateUiStateLoading(false)
+                    displayResult(it.weatherForecast)
+                }
+                is WeatherForecastUiState.Loading -> updateUiStateLoading(true)
+                is WeatherForecastUiState.Error -> showError()
+            }
+        }
+    }
+
+    private fun displayResult(weatherForecast: WeatherForecast?) {
+        binding.textViewResult.text = weatherForecast.toString()
+    }
+
+    private fun updateUiStateLoading(isLoading: Boolean) {
+        with(binding) {
+            progressBar.isVisible = isLoading
+            buttonMakeRequest.isEnabled = !isLoading
+        }
+    }
+
+    private fun showError() {
+        binding.textViewResult.text = getString(R.string.unexpected_error_occurred)
     }
 }
