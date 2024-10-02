@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.denyskostetskyi.networkrequests.databinding.ActivityMainBinding
+import com.denyskostetskyi.networkrequests.domain.model.HttpClient
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
