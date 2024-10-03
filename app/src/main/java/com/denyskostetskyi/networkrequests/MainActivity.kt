@@ -1,7 +1,6 @@
 package com.denyskostetskyi.networkrequests
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -37,7 +36,9 @@ class MainActivity : AppCompatActivity() {
     private fun initViewModel() {
         val retrofitRepository =
             (application as NetworkApplication).retrofitWeatherForecastRepository
-        val factory = MainViewModelFactory(retrofitRepository)
+        val ktorRepository =
+            (application as NetworkApplication).ktorWeatherForecastRepository
+        val factory = MainViewModelFactory(retrofitRepository, ktorRepository)
         viewModel = ViewModelProvider(this, factory)[MainViewModel::class]
     }
 
@@ -60,7 +61,7 @@ class MainActivity : AppCompatActivity() {
     private fun makeRequest(httpClientType: HttpClientType) {
         when (httpClientType) {
             HttpClientType.RETROFIT -> viewModel.fetchWeatherForecastRetrofit(Location.LVIV)
-            HttpClientType.KTOR -> Log.d("TEST", "KTOR")
+            HttpClientType.KTOR -> viewModel.fetchWeatherForecastKtor(Location.LVIV)
         }
     }
 
@@ -71,8 +72,9 @@ class MainActivity : AppCompatActivity() {
                     updateUiStateLoading(false)
                     displayResult(it.weatherForecast)
                 }
+
                 is WeatherForecastUiState.Loading -> updateUiStateLoading(true)
-                is WeatherForecastUiState.Error -> showError()
+                is WeatherForecastUiState.Error -> showError(it.error)
             }
         }
     }
@@ -88,7 +90,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showError() {
-        binding.textViewResult.text = getString(R.string.unexpected_error_occurred)
+    private fun showError(error: Throwable?) {
+        binding.textViewResult.text = error.toString()
     }
 }

@@ -1,12 +1,17 @@
 package com.denyskostetskyi.networkrequests.data.remote.dto
 
 import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class HourlyData(
     @SerializedName("temperature_2m")
+    @SerialName("temperature_2m")
     val temperatureArray: DoubleArray,
 
     @SerializedName("weather_code")
+    @SerialName("weather_code")
     val weatherCodeArray: IntArray
 ) {
     override fun equals(other: Any?): Boolean {

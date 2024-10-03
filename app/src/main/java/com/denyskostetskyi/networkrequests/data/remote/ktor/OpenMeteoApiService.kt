@@ -14,7 +14,7 @@ class OpenMeteoApiService(private val client: HttpClient) {
         timezone: String = ApiConstants.DEFAULT_TIMEZONE,
         forecastDays: Int = ApiConstants.DEFAULT_FORECAST_DAYS
     ): WeatherForecastDto {
-        return client.get("${ApiConstants.BASE_URL}${ApiConstants.BASE_URL}") {
+        return client.get("${ApiConstants.BASE_URL}${ApiConstants.ENDPOINT_FORECAST}") {
             url {
                 parameters.append(ApiConstants.PARAM_LATITUDE, latitude.toString())
                 parameters.append(ApiConstants.PARAM_LONGITUDE, longitude.toString())

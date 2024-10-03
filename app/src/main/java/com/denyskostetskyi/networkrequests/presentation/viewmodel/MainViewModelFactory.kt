@@ -5,13 +5,14 @@ import androidx.lifecycle.ViewModelProvider
 import com.denyskostetskyi.networkrequests.domain.repository.WeatherForecastRepository
 
 class MainViewModelFactory(
-    private val weatherForecastRepository: WeatherForecastRepository,
+    private val retrofitRepository: WeatherForecastRepository,
+    private val ktorRepository: WeatherForecastRepository,
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return MainViewModel(weatherForecastRepository) as T
+            return MainViewModel(retrofitRepository, ktorRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
