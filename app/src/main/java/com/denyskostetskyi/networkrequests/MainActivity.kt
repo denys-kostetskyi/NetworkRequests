@@ -1,7 +1,9 @@
 package com.denyskostetskyi.networkrequests
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -9,7 +11,6 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import com.denyskostetskyi.networkrequests.databinding.ActivityMainBinding
 import com.denyskostetskyi.networkrequests.domain.model.Location
-import com.denyskostetskyi.networkrequests.domain.model.WeatherForecast
 import com.denyskostetskyi.networkrequests.presentation.state.WeatherForecastUiState
 import com.denyskostetskyi.networkrequests.presentation.viewmodel.MainViewModel
 import com.denyskostetskyi.networkrequests.presentation.viewmodel.MainViewModelFactory
@@ -17,6 +18,13 @@ import com.denyskostetskyi.networkrequests.presentation.viewmodel.MainViewModelF
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private lateinit var viewModel: MainViewModel
+
+    private val exportFileLauncher =
+        registerForActivityResult(ActivityResultContracts.CreateDocument(MIME_TYPE_XLSX)) { uri: Uri? ->
+            uri?.let {
+                downloadFile(it)
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +51,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initViews() {
         setMakeRequestButtonClickListener()
+        setDownloadFileButtonClickListener()
     }
 
     private fun setMakeRequestButtonClickListener() {
@@ -59,25 +68,51 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun observeViewModel() {
-        viewModel.weatherForecast.observe(this) {
-            when (it) {
-                is WeatherForecastUiState.Success -> {
-                    updateUiStateLoading(false)
-                    displayResult(it.weatherForecast)
-                }
-
-                is WeatherForecastUiState.Loading -> updateUiStateLoading(true)
-                is WeatherForecastUiState.Error -> {
-                    updateUiStateLoading(false)
-                    showError(it.error)
+    private fun setDownloadFileButtonClickListener() {
+        with(binding) {
+            buttonDownloadFile.setOnClickListener {
+                if (!radioButtonRetrofit.isChecked && !radioButtonKtor.isChecked) {
+                    textViewResult.text = getString(R.string.please_select_a_http_client)
+                } else {
+                    exportFileLauncher.launch(SUGGESTED_FILE_NAME)
                 }
             }
         }
     }
 
-    private fun displayResult(weatherForecast: WeatherForecast?) {
-        binding.textViewResult.text = weatherForecast.toString()
+    private fun downloadFile(destination: Uri) {
+        with(binding) {
+            when {
+                radioButtonRetrofit.isChecked -> viewModel.downloadWeatherForecastFileRetrofit(
+                    Location.LVIV,
+                    contentResolver,
+                    destination
+                )
+
+                radioButtonKtor.isChecked -> viewModel.downloadWeatherForecastFileKtor(
+                    Location.LVIV,
+                    contentResolver,
+                    destination
+                )
+
+                else -> {}
+            }
+        }
+    }
+
+    private fun observeViewModel() {
+        viewModel.uiState.observe(this) { state ->
+            updateUiStateLoading(state is WeatherForecastUiState.Loading)
+            when (state) {
+                is WeatherForecastUiState.Success -> displayResult(state.result)
+                is WeatherForecastUiState.Error -> showError(state.error)
+                WeatherForecastUiState.Loading -> {}
+            }
+        }
+    }
+
+    private fun displayResult(result: String) {
+        binding.textViewResult.text = result
     }
 
     private fun updateUiStateLoading(isLoading: Boolean) {
@@ -89,5 +124,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun showError(error: Throwable?) {
         binding.textViewResult.text = error.toString()
+    }
+
+    companion object {
+        private const val SUGGESTED_FILE_NAME = "forecast"
+        private const val MIME_TYPE_XLSX =
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     }
 }

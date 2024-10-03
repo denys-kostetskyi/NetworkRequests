@@ -10,13 +10,14 @@ import com.denyskostetskyi.networkrequests.domain.model.Location
 import com.denyskostetskyi.networkrequests.domain.repository.WeatherForecastRepository
 import com.denyskostetskyi.networkrequests.presentation.state.WeatherForecastUiState
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 class MainViewModel(
     private val retrofitRepository: WeatherForecastRepository,
     private val ktorRepository: WeatherForecastRepository,
 ) : ViewModel() {
-    private val _weatherForecast = MutableLiveData<WeatherForecastUiState>()
-    val weatherForecast: LiveData<WeatherForecastUiState> = _weatherForecast
+    private val _uiState = MutableLiveData<WeatherForecastUiState>()
+    val uiState: LiveData<WeatherForecastUiState> = _uiState
 
     fun fetchWeatherForecastRetrofit(location: Location) {
         fetchWeatherForecast(location, retrofitRepository)
@@ -28,12 +29,13 @@ class MainViewModel(
 
     private fun fetchWeatherForecast(location: Location, repository: WeatherForecastRepository) {
         viewModelScope.launch {
-            _weatherForecast.value = WeatherForecastUiState.Loading
+            _uiState.value = WeatherForecastUiState.Loading
             val result = repository.getWeatherForecast(location)
             if (result.isSuccess) {
-                _weatherForecast.value = WeatherForecastUiState.Success(result.getOrNull())
+                _uiState.value =
+                    WeatherForecastUiState.Success(result.getOrNull().toString())
             } else {
-                _weatherForecast.value = WeatherForecastUiState.Error(result.exceptionOrNull())
+                _uiState.value = WeatherForecastUiState.Error(result.exceptionOrNull())
             }
         }
     }
@@ -61,10 +63,17 @@ class MainViewModel(
         repository: WeatherForecastRepository
     ) {
         viewModelScope.launch {
+            _uiState.value = WeatherForecastUiState.Loading
             val result = repository.downloadWeatherForecastFile(location)
             if (result.isSuccess) {
-                resolver.openOutputStream(destination)?.use { output ->
-                    output.write(result.getOrNull())
+                try {
+                    resolver.openOutputStream(destination)?.use { output ->
+                        output.write(result.getOrNull())
+                    }
+                    _uiState.value =
+                        WeatherForecastUiState.Success(destination.path.toString())
+                } catch (e: IOException) {
+                    _uiState.value = WeatherForecastUiState.Error(e)
                 }
             }
         }

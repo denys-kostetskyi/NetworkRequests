@@ -50,22 +50,32 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/make_request"
-        app:layout_constraintBottom_toTopOf="@id/textViewResult"
+        app:layout_constraintBottom_toTopOf="@id/buttonDownloadFile"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/radioGroupHttpClient" />
+
+    <Button
+        android:id="@+id/buttonDownloadFile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="@string/download_file"
+        app:layout_constraintBottom_toTopOf="@id/textViewResult"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/buttonMakeRequest" />
 
     <TextView
         android:id="@+id/textViewResult"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:hint="@string/request_result"
+        android:hint="@string/result"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/buttonMakeRequest" />
+        app:layout_constraintTop_toBottomOf="@id/buttonDownloadFile" />
 
     <ProgressBar
         android:id="@+id/progressBar"
