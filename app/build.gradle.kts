@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.jetbrains.kotlin.serialization)
 }
 
 android {
@@ -48,6 +49,11 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation (libs.retrofit)
     implementation (libs.retrofit2.converter.gson)
+    implementation(platform(libs.ktor.bom))
+    implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.serialization)
+    implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.ktor.client.content.negotiation)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
