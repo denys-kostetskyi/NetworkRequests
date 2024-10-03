@@ -8,7 +8,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import com.denyskostetskyi.networkrequests.databinding.ActivityMainBinding
-import com.denyskostetskyi.networkrequests.domain.model.HttpClientType
 import com.denyskostetskyi.networkrequests.domain.model.Location
 import com.denyskostetskyi.networkrequests.domain.model.WeatherForecast
 import com.denyskostetskyi.networkrequests.presentation.state.WeatherForecastUiState
@@ -50,18 +49,13 @@ class MainActivity : AppCompatActivity() {
         with(binding) {
             buttonMakeRequest.setOnClickListener {
                 when {
-                    radioButtonRetrofit.isChecked -> makeRequest(HttpClientType.RETROFIT)
-                    radioButtonKtor.isChecked -> makeRequest(HttpClientType.KTOR)
+                    radioButtonRetrofit.isChecked ->
+                        viewModel.fetchWeatherForecastRetrofit(Location.LVIV)
+
+                    radioButtonKtor.isChecked -> viewModel.fetchWeatherForecastKtor(Location.LVIV)
                     else -> textViewResult.text = getString(R.string.please_select_a_http_client)
                 }
             }
-        }
-    }
-
-    private fun makeRequest(httpClientType: HttpClientType) {
-        when (httpClientType) {
-            HttpClientType.RETROFIT -> viewModel.fetchWeatherForecastRetrofit(Location.LVIV)
-            HttpClientType.KTOR -> viewModel.fetchWeatherForecastKtor(Location.LVIV)
         }
     }
 
