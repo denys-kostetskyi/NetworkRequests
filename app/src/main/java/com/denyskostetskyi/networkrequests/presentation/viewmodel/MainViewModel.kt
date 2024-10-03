@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.denyskostetskyi.networkrequests.domain.model.Location
 import com.denyskostetskyi.networkrequests.domain.repository.WeatherForecastRepository
 import com.denyskostetskyi.networkrequests.presentation.state.WeatherForecastUiState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.IOException
 
@@ -28,14 +29,13 @@ class MainViewModel(
     }
 
     private fun fetchWeatherForecast(location: Location, repository: WeatherForecastRepository) {
-        viewModelScope.launch {
-            _uiState.value = WeatherForecastUiState.Loading
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.postValue(WeatherForecastUiState.Loading)
             val result = repository.getWeatherForecast(location)
             if (result.isSuccess) {
-                _uiState.value =
-                    WeatherForecastUiState.Success(result.getOrNull().toString())
+                _uiState.postValue(WeatherForecastUiState.Success(result.getOrNull().toString()))
             } else {
-                _uiState.value = WeatherForecastUiState.Error(result.exceptionOrNull())
+                _uiState.postValue(WeatherForecastUiState.Error(result.exceptionOrNull()))
             }
         }
     }
@@ -62,18 +62,17 @@ class MainViewModel(
         destination: Uri,
         repository: WeatherForecastRepository
     ) {
-        viewModelScope.launch {
-            _uiState.value = WeatherForecastUiState.Loading
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.postValue(WeatherForecastUiState.Loading)
             val result = repository.downloadWeatherForecastFile(location)
             if (result.isSuccess) {
                 try {
                     resolver.openOutputStream(destination)?.use { output ->
                         output.write(result.getOrNull())
                     }
-                    _uiState.value =
-                        WeatherForecastUiState.Success(destination.path.toString())
+                    _uiState.postValue(WeatherForecastUiState.Success(destination.path.toString()))
                 } catch (e: IOException) {
-                    _uiState.value = WeatherForecastUiState.Error(e)
+                    _uiState.postValue(WeatherForecastUiState.Error(e))
                 }
             }
         }
