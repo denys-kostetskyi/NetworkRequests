@@ -5,4 +5,6 @@ import com.denyskostetskyi.networkrequests.domain.model.WeatherForecast
 
 interface WeatherForecastRepository {
     suspend fun getWeatherForecast(location: Location): Result<WeatherForecast>
+
+    suspend fun downloadWeatherForecastFile(location: Location): Result<ByteArray>
 }

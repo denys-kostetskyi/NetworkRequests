@@ -19,4 +19,13 @@ class RetrofitWeatherForecastRepository(
             Result.failure(e)
         }
     }
+
+    override suspend fun downloadWeatherForecastFile(location: Location): Result<ByteArray> {
+        return try {
+            val response = apiService.getWeatherForecastFile(location.latitude, location.longitude)
+            Result.success(response.bytes())
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

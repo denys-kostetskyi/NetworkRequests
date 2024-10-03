@@ -4,7 +4,8 @@
     <string name="ktor">Ktor</string>
     <string name="select_http_client">Select HTTP client:</string>
     <string name="make_request">Make request</string>
-    <string name="request_result">Request result</string>
+    <string name="result">Result</string>
     <string name="please_select_a_http_client">Please select a HTTP client</string>
     <string name="unexpected_error_occurred">Unexpected error occurred</string>
+    <string name="download_file">Download file</string>
 </resources>

@@ -10,8 +10,10 @@ object ApiConstants {
     const val PARAM_HOURLY = "hourly"
     const val PARAM_TIMEZONE = "timezone"
     const val PARAM_FORECAST_DAYS = "forecast_days"
+    const val PARAM_FORMAT = "format"
 
     const val DEFAULT_HOURLY = "temperature_2m,weather_code"
     const val DEFAULT_TIMEZONE = "auto"
     const val DEFAULT_FORECAST_DAYS = 1
+    const val DEFAULT_FORMAT = "xlsx"
 }
