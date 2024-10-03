@@ -5,7 +5,6 @@ import com.denyskostetskyi.networkrequests.data.remote.retrofit.OpenMeteoApiServ
 import com.denyskostetskyi.networkrequests.domain.model.Location
 import com.denyskostetskyi.networkrequests.domain.model.WeatherForecast
 import com.denyskostetskyi.networkrequests.domain.repository.WeatherForecastRepository
-import java.io.File
 
 class RetrofitWeatherForecastRepository(
     private val apiService: OpenMeteoApiService,
@@ -21,20 +20,10 @@ class RetrofitWeatherForecastRepository(
         }
     }
 
-    override suspend fun downloadWeatherForecastFile(
-        location: Location,
-        destinationFilepath: String
-    ): Result<Unit> {
+    override suspend fun downloadWeatherForecastFile(location: Location): Result<ByteArray> {
         return try {
-            val responseBody =
-                apiService.getWeatherForecastFile(location.latitude, location.longitude)
-            val file = File(destinationFilepath)
-            responseBody.byteStream().use { input ->
-                file.outputStream().use { output ->
-                    input.copyTo(output)
-                }
-            }
-            Result.success(Unit)
+            val response = apiService.getWeatherForecastFile(location.latitude, location.longitude)
+            Result.success(response.bytes())
         } catch (e: Exception) {
             Result.failure(e)
         }

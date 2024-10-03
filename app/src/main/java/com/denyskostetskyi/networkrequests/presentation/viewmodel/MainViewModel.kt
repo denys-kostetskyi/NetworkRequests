@@ -1,5 +1,7 @@
 package com.denyskostetskyi.networkrequests.presentation.viewmodel
 
+import android.content.ContentResolver
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -32,6 +34,38 @@ class MainViewModel(
                 _weatherForecast.value = WeatherForecastUiState.Success(result.getOrNull())
             } else {
                 _weatherForecast.value = WeatherForecastUiState.Error(result.exceptionOrNull())
+            }
+        }
+    }
+
+    fun downloadWeatherForecastFileRetrofit(
+        location: Location,
+        resolver: ContentResolver,
+        destination: Uri
+    ) {
+        downloadWeatherForecastFile(location, resolver, destination, retrofitRepository)
+    }
+
+    fun downloadWeatherForecastFileKtor(
+        location: Location,
+        resolver: ContentResolver,
+        destination: Uri
+    ) {
+        downloadWeatherForecastFile(location, resolver, destination, ktorRepository)
+    }
+
+    private fun downloadWeatherForecastFile(
+        location: Location,
+        resolver: ContentResolver,
+        destination: Uri,
+        repository: WeatherForecastRepository
+    ) {
+        viewModelScope.launch {
+            val result = repository.downloadWeatherForecastFile(location)
+            if (result.isSuccess) {
+                resolver.openOutputStream(destination)?.use { output ->
+                    output.write(result.getOrNull())
+                }
             }
         }
     }

@@ -5,6 +5,7 @@ import com.denyskostetskyi.networkrequests.data.remote.ktor.OpenMeteoApiService
 import com.denyskostetskyi.networkrequests.domain.model.Location
 import com.denyskostetskyi.networkrequests.domain.model.WeatherForecast
 import com.denyskostetskyi.networkrequests.domain.repository.WeatherForecastRepository
+import io.ktor.client.statement.readBytes
 
 class KtorWeatherForecastRepository(
     private val apiService: OpenMeteoApiService,
@@ -21,10 +22,13 @@ class KtorWeatherForecastRepository(
         }
     }
 
-    override suspend fun downloadWeatherForecastFile(
-        location: Location,
-        destinationFilepath: String
-    ): Result<Unit> {
-        TODO("Not yet implemented")
+    override suspend fun downloadWeatherForecastFile(location: Location): Result<ByteArray> {
+        return try {
+            val response =
+                apiService.downloadWeatherForecastFile(location.latitude, location.longitude)
+            Result.success(response.readBytes())
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }
