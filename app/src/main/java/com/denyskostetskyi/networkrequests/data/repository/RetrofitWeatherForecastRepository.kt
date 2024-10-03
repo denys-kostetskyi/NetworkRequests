@@ -1,7 +1,7 @@
 package com.denyskostetskyi.networkrequests.data.repository
 
 import com.denyskostetskyi.networkrequests.data.WeatherForecastMapper
-import com.denyskostetskyi.networkrequests.data.remote.OpenMeteoApiService
+import com.denyskostetskyi.networkrequests.data.remote.retrofit.OpenMeteoApiService
 import com.denyskostetskyi.networkrequests.domain.model.Location
 import com.denyskostetskyi.networkrequests.domain.model.WeatherForecast
 import com.denyskostetskyi.networkrequests.domain.repository.WeatherForecastRepository
