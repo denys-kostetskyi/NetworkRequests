@@ -4,6 +4,6 @@ import com.denyskostetskyi.networkrequests.domain.model.WeatherForecast
 
 sealed interface WeatherForecastUiState {
     data class Success(val weatherForecast: WeatherForecast?) : WeatherForecastUiState
-    data object Error : WeatherForecastUiState
+    data class Error(val error: Throwable?) : WeatherForecastUiState
     data object Loading : WeatherForecastUiState
 }

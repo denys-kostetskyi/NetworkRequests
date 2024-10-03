@@ -1,7 +1,6 @@
 package com.denyskostetskyi.networkrequests
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -9,7 +8,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import com.denyskostetskyi.networkrequests.databinding.ActivityMainBinding
-import com.denyskostetskyi.networkrequests.domain.model.HttpClient
+import com.denyskostetskyi.networkrequests.domain.model.HttpClientType
 import com.denyskostetskyi.networkrequests.domain.model.Location
 import com.denyskostetskyi.networkrequests.domain.model.WeatherForecast
 import com.denyskostetskyi.networkrequests.presentation.state.WeatherForecastUiState
@@ -37,7 +36,9 @@ class MainActivity : AppCompatActivity() {
     private fun initViewModel() {
         val retrofitRepository =
             (application as NetworkApplication).retrofitWeatherForecastRepository
-        val factory = MainViewModelFactory(retrofitRepository)
+        val ktorRepository =
+            (application as NetworkApplication).ktorWeatherForecastRepository
+        val factory = MainViewModelFactory(retrofitRepository, ktorRepository)
         viewModel = ViewModelProvider(this, factory)[MainViewModel::class]
     }
 
@@ -49,18 +50,18 @@ class MainActivity : AppCompatActivity() {
         with(binding) {
             buttonMakeRequest.setOnClickListener {
                 when {
-                    radioButtonRetrofit.isChecked -> makeRequest(HttpClient.RETROFIT)
-                    radioButtonKtor.isChecked -> makeRequest(HttpClient.KTOR)
+                    radioButtonRetrofit.isChecked -> makeRequest(HttpClientType.RETROFIT)
+                    radioButtonKtor.isChecked -> makeRequest(HttpClientType.KTOR)
                     else -> textViewResult.text = getString(R.string.please_select_a_http_client)
                 }
             }
         }
     }
 
-    private fun makeRequest(httpClient: HttpClient) {
-        when (httpClient) {
-            HttpClient.RETROFIT -> viewModel.fetchWeatherForecastRetrofit(Location.LVIV)
-            HttpClient.KTOR -> Log.d("TEST", "KTOR")
+    private fun makeRequest(httpClientType: HttpClientType) {
+        when (httpClientType) {
+            HttpClientType.RETROFIT -> viewModel.fetchWeatherForecastRetrofit(Location.LVIV)
+            HttpClientType.KTOR -> viewModel.fetchWeatherForecastKtor(Location.LVIV)
         }
     }
 
@@ -71,8 +72,12 @@ class MainActivity : AppCompatActivity() {
                     updateUiStateLoading(false)
                     displayResult(it.weatherForecast)
                 }
+
                 is WeatherForecastUiState.Loading -> updateUiStateLoading(true)
-                is WeatherForecastUiState.Error -> showError()
+                is WeatherForecastUiState.Error -> {
+                    updateUiStateLoading(false)
+                    showError(it.error)
+                }
             }
         }
     }
@@ -88,7 +93,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showError() {
-        binding.textViewResult.text = getString(R.string.unexpected_error_occurred)
+    private fun showError(error: Throwable?) {
+        binding.textViewResult.text = error.toString()
     }
 }
