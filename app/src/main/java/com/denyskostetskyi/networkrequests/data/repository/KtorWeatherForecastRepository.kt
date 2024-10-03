@@ -20,4 +20,11 @@ class KtorWeatherForecastRepository(
             Result.failure(e)
         }
     }
+
+    override suspend fun downloadWeatherForecastFile(
+        location: Location,
+        destinationFilepath: String
+    ): Result<Unit> {
+        TODO("Not yet implemented")
+    }
 }
