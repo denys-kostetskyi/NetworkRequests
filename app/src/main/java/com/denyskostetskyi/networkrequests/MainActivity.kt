@@ -74,7 +74,10 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 is WeatherForecastUiState.Loading -> updateUiStateLoading(true)
-                is WeatherForecastUiState.Error -> showError(it.error)
+                is WeatherForecastUiState.Error -> {
+                    updateUiStateLoading(false)
+                    showError(it.error)
+                }
             }
         }
     }
